@@ -10,7 +10,7 @@
 
 #include <stdbool.h>
 
-#include "Room.h"
+#include "Course.h"
 #include "AdjMat.h"
 
 typedef struct
@@ -18,7 +18,7 @@ typedef struct
     int roomNumber;
     float treasure;
 }SearchResults;
-typedef Room Payload;
+typedef Course Payload;
 typedef SearchResults Payload2;
 struct LLNode;
 typedef struct

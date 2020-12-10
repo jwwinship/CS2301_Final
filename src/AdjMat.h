@@ -8,8 +8,8 @@
 #include <stdbool.h>
 typedef struct
 {
-    int n;
-    int* edgesP;
+    int n; //TODO: Maybe change to nCourses?
+    int* edgesP; //TODO: Change to something like timeP, to represent the inital time, 8AM on monday. We can probably use pointers just like those in the adjacency matrix.
 }AdjMat;
 
 
