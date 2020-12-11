@@ -12,7 +12,8 @@ typedef struct
     int* edgeTimeP; //Points to 8AM on Monday on the schedule, the first time in our schedule.
 } Schedule;
 
-void setTimeBusy(int dayOfWeek, int time);
-bool getTimeBusy(int dayOfWeek, int time);
+void setTimeBusy(Schedule* scheduleP, int time,int dayOfWeek);
+bool getTimeBusy(Schedule* scheduleP, int time,int dayOfWeek);
 void initSchedule(Schedule* scheduleP);
+void displaySchedule(Schedule* scheduleP);
 #endif //ADJMAT_C_SCHEDULE_H

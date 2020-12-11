@@ -14,11 +14,11 @@
 bool tests()
 {
 	bool answer = false;
-    bool ok1 = testReadFile();
+    bool ok1 = testReadInitialInputFile();
 	bool ok2 = testMakeLList();
-	bool ok3 = testGotAdjacencyMatrix();
-	bool ok4 = testSetEdge();
-	bool ok5 = testGetEdge();
+	bool ok3 = testInitSchedule();
+	bool ok4 = testSetTimeBusy();
+	bool ok5 = testGetTimeBusy();
 	bool ok6 = testDequeue();
 	bool ok7 = testPrintHistory();
 	answer = ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7;
@@ -27,55 +27,105 @@ bool tests()
 
 
 
-bool testGotAdjacencyMatrix()
+bool testInitSchedule()
 {
-	bool ans = true;
+	bool ok = true;
+    Schedule* testScheduleP = (Schedule*) malloc(sizeof(Schedule));
+    testScheduleP->edgeTimeP = (int* ) malloc(5*13*sizeof(int));
+    puts("Testing initSchedule");
+    initSchedule(testScheduleP);
 
-    if (ans)
+    for (int row = 0; row<13; row++)
     {
-        puts("Test gotAdjMatrix passed");
+        for (int col = 0; col<5; col++)
+        {
+            int* memoryToTest = ((testScheduleP->edgeTimeP)+(row*5)+col);
+            if(*memoryToTest != 0)
+            {
+                ok = false;
+            }
+        }
+    }
+    if (ok)
+    {
+        puts("Test initSchedule passed");
     }
     else
     {
-        puts("Test gotAdjMatrix did not pass");
+        puts("Test initSchedule did not pass");
     }
 
-	return ans;
+	return ok;
 }
 
-bool testSetEdge()
+bool testSetTimeBusy()
 {
 
-    bool ans = true;
-    puts("Testing SetEdge...");
+    bool ok = true;
 
-    if (ans)
+    puts("Testing setTimeBusy...");
+    Schedule* testScheduleP = (Schedule*) malloc(sizeof(Schedule));
+    testScheduleP->edgeTimeP = (int* ) malloc(5*13*sizeof(int));
+
+    initSchedule(testScheduleP);
+
+    for (int row = 0; row<13; row++)
     {
-        puts("Test setEdge passed");
+        for (int col = 0; col<5; col++)
+        {
+            setTimeBusy(testScheduleP, row, col);
+            if (*(testScheduleP->edgeTimeP + (5*row) + col) != 1)
+            {
+                ok = false;
+            }
+        }
+
+    }
+
+    if (ok)
+    {
+        puts("Test setTimeBusy passed");
     }
     else
     {
-        puts("Test setEdge did not pass");
+        puts("Test setTimeBusy did not pass");
     }
 
-    return ans;
+    return ok;
 }
 
-bool testGetEdge()
+bool testGetTimeBusy()
 {
-    bool ans = true;
-    puts("Testing GetEdge...");
+    bool ok = true;
 
-    if (ans)
+    puts("Testing getTimeBusy...");
+    Schedule* testScheduleP = (Schedule*) malloc(sizeof(Schedule));
+    testScheduleP->edgeTimeP = (int* ) malloc(5*13*sizeof(int));
+
+    initSchedule(testScheduleP);
+
+    for (int row = 0; row<13; row++)
     {
-        puts("Test GetEdge passed");
+        for (int col = 0; col<5; col++)
+        {
+            *(testScheduleP->edgeTimeP + (5*row) + col) = 1;
+            if(!(getTimeBusy(testScheduleP, row, col)))
+            {
+                ok = false;
+            }
+        }
+
+    }
+    if (ok)
+    {
+        puts("Test GetTimeBusy passed");
     }
     else
     {
-        puts("Test GetEdge did not pass");
+        puts("Test GetTimeBusy did not pass");
     }
 
-    return ans;
+    return ok;
 }
 
 bool testMakeLList() //Tests the making of a list and the enqueue behavior.
@@ -92,17 +142,27 @@ bool testPrintHistory() //Visual test. If the following list of search results i
 	return ok;
 }
 
-bool testReadFile()
+bool testReadInitialInputFile()
 {
-    puts("starting testReadFile"); fflush(stdout);
+    puts("starting testReadInitialInputFile\n"); fflush(stdout);
     bool ok = false;
     //the file tells how many rooms there are
     int answer = -1;
-    int rightAnswer = 8;
+    int rightAnswer = 4;
 
 
-    AdjMat* adjMP = (AdjMat*) malloc(sizeof(AdjMat));
-    Course* theCoursePs[10];//addresses for 10 rooms
+    Schedule* scheduleP = (Schedule *) malloc(sizeof(Schedule));
+    Course* theCoursePs[20];//addresses for 10 rooms
+    ok = readInitialInputFile("final2020B.txt", &answer, scheduleP, theCoursePs);
+    if (ok)
+    {
+        if (answer != rightAnswer)
+        {
+            puts("test failed on number of courses\n");
+        }
+    }
+
+
 
 
 

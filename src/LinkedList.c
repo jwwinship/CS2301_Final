@@ -179,21 +179,7 @@ void printHistory(LLNode2* hp)
     }
     else
     {
-        //traverse the list, printing as we go
-        float treasureSubtotal = 0.0F;
-        int room = -1;
-        LLNode2* temp = hp;
-        while(temp->next)
-        {
-            room =temp->payP->roomNumber;
-            treasureSubtotal+= temp->payP->treasure;
-            printf("The room was %d, and the treasure subtotal was %f.\n", room, treasureSubtotal);
-            temp = temp->next;
 
-        }
-        room =temp->payP->roomNumber;
-        treasureSubtotal+= temp->payP->treasure;
-        printf("The room was %d, and the treasure subtotal was %f.\n", room, treasureSubtotal);
     }
 }
 

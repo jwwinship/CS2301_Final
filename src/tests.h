@@ -10,14 +10,15 @@
 
 
 #include "production.h"
+#include "Schedule.h"
 
 bool tests();
 
-bool testReadFile();
-bool testGotAdjacencyMatrix();
+bool testReadInitialInputFile();
+bool testInitSchedule();
 bool testMakeLList();
-bool testSetEdge();
-bool testGetEdge();
+bool testSetTimeBusy();
+bool testGetTimeBusy();
 bool testDequeue();
 bool testPrintHistory();
 

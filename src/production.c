@@ -8,6 +8,8 @@
 #include "AdjMat.h"
 
 #include "LinkedList.h"
+#include "Schedule.h"
+
 bool production(int argc, char* argv[])
 {
     bool answer = false;
@@ -94,17 +96,18 @@ bool production(int argc, char* argv[])
                         break;
                 }//end of switch
             }//end of for loop on argument count
+            puts("after reading arguments"); fflush(stdout);
+            //we'll want to read the file
+            int nCourses = -1;
+            Schedule* scheduleP = (Schedule *) malloc(sizeof(Schedule)); //TODO change this to schedule
+
+            Course* theCoursePs[20];//addresses for 10 courses
+
+            puts("Before read file"); fflush(stdout);
+            answer = readInitialInputFile(input_initial_filename, &nCourses, scheduleP, theCoursePs); //read the file
+            puts("Back from read file"); fflush(stdout);
         }//end of argument read
-        puts("after reading arguments"); fflush(stdout);
-        //we'll want to read the file
-        int nrooms = -1;
-        AdjMat* adjMP = (AdjMat*) malloc(sizeof(AdjMat)); //TODO change this to schedule
 
-        Course* theCoursePs[10];//addresses for 10 rooms
-
-        puts("Before read file"); fflush(stdout);
-        //answer = readFile(input_initial_filename, &nrooms, adjMP, theCoursePs); //read the file
-        puts("Back from read file"); fflush(stdout);
 
 
 
@@ -117,15 +120,57 @@ bool production(int argc, char* argv[])
 
     return answer;
 }
-bool readInitialInputFile()
+
+
+
+bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs) //TODO: Figure out how to parse the file into useful information! YAY this is gonna be fun.
 {
     bool ok = false;
     //the file tells how many rooms there are
+    FILE* fp = fopen(filename, "r");
 
+    int courseCount = 0;
+    char c;
+    char potentialCourseDays[5];
+
+    int potentialCourseTime;
+    int daysUsedCounter=0;
+
+    theScheduleP->edgeTimeP = (int* ) malloc(5*13*sizeof(int)); //There are 5 days in the week, and 13 valid hours in each day. We'll allocate some memory for every one of them.
+    puts("About to initialize the schedule");
+    initSchedule(theScheduleP);
+    displaySchedule(theScheduleP); //TODO: Remove line, just here for debugging.
+    if(fp == NULL)
+    {
+        puts("Error opening file!");
+    }
+    else
+    {
+        puts("Printing the file to console..");
+        for (c = getc(fp); c != EOF; c = getc(fp))
+        {
+            if (c == '\n' || c =='\0')
+            {
+                char tempGet = getc(fp);
+                if (tempGet !='\n' && tempGet != EOF)//Test if line is empty
+                {
+                    courseCount++;
+                }
+                ungetc(tempGet, fp); //Puts back the character we tested
+            }
+
+
+            printf("%c", c); fflush(stdout);
+        }
+        printf("\n");
+        courseCount++;
+        *nCourses = courseCount;
+        rewind(fp); //This will reset us to the start of the file, so we can read again, looking for different information.
+    }
+    printf("The schedule %s has %d lines\n", filename, courseCount); fflush(stdout);
     ok = true;
 
 
 
     return ok;
 }
-
