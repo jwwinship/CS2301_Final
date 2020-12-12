@@ -21,6 +21,7 @@ bool testSetTimeBusy();
 bool testGetTimeBusy();
 bool testDequeue();
 bool testPrintHistory();
+bool testGetScheduleConflict();
 
 
 

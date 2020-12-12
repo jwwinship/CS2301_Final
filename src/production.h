@@ -13,6 +13,7 @@
 #include <stdlib.h>//strtol
 
 #include "Course.h"
+#include "Schedule.h"
 
 
 
@@ -20,6 +21,7 @@
 
 bool production(int argc, char* argv[]);
 bool readInitialInputFile();
+bool writeScheduleToFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs);
 void displayBoard();
 
 #endif /* PRODUCTION_H_ */

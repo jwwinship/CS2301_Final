@@ -78,12 +78,12 @@ bool production(int argc, char* argv[])
                         printf("The length of the output filename is %d.\n", strlen(argv[i]));
                         printf("The proposed output filename is %s.\n", argv[i]);
                         if (strlen(argv[i]) >= FILENAMELENGTHALLOWANCE) {
-                            puts("Filename is too long.");
+                            puts("Filename is too long.\n");
                             fflush(stdout);
                             answer = false;
                         } else {
-                            strcpy(input_initial_filename, argv[i]);
-                            printf("Output filename was %s.\n", input_initial_filename);
+                            strcpy(output_filename, argv[i]);
+                            printf("Output filename was %s.\n", output_filename);
                             fflush(stdout);
                         }
 
@@ -95,17 +95,28 @@ bool production(int argc, char* argv[])
                         answer = false;
                         break;
                 }//end of switch
+                printf("\n");
             }//end of for loop on argument count
             puts("after reading arguments"); fflush(stdout);
             //we'll want to read the file
             int nCourses = -1;
             Schedule* scheduleP = (Schedule *) malloc(sizeof(Schedule)); //TODO change this to schedule
 
-            Course* theCoursePs[20];//addresses for 10 courses
+            Course* theCoursePs[20];//addresses for 20 courses
+            scheduleP->edgeTimeP = (int* ) malloc(5*13*sizeof(int)); //There are 5 days in the week, and 13 valid hours in each day. We'll allocate some memory for every one of them.
+            puts("About to initialize the schedule");
+            initSchedule(scheduleP);
 
-            puts("Before read file"); fflush(stdout);
+
+            puts("Before read initial input file"); fflush(stdout);
             answer = readInitialInputFile(input_initial_filename, &nCourses, scheduleP, theCoursePs); //read the file
             puts("Back from read file"); fflush(stdout);
+
+            puts("Before read additional input file"); fflush(stdout);
+            answer = readInitialInputFile(input_additional_filename, &nCourses, scheduleP, theCoursePs); //read the file
+            puts("Back from read file"); fflush(stdout);
+
+            answer = writeScheduleToFile(output_filename,&nCourses, scheduleP, theCoursePs);
         }//end of argument read
 
 
@@ -123,7 +134,7 @@ bool production(int argc, char* argv[])
 
 
 
-bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs) //TODO: Figure out how to parse the file into useful information! YAY this is gonna be fun.
+bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs) //TODO: Add ability to add decisions to a linked list
 {
     bool ok = false;
     //the file tells how many rooms there are
@@ -136,9 +147,7 @@ bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP,
     int potentialCourseTime;
     int daysUsedCounter=0;
 
-    theScheduleP->edgeTimeP = (int* ) malloc(5*13*sizeof(int)); //There are 5 days in the week, and 13 valid hours in each day. We'll allocate some memory for every one of them.
-    puts("About to initialize the schedule");
-    initSchedule(theScheduleP);
+
     displaySchedule(theScheduleP); //TODO: Remove line, just here for debugging.
     if(fp == NULL)
     {
@@ -146,6 +155,7 @@ bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP,
     }
     else
     {
+        //Begins the part where we count the number of courses
         puts("Printing the file to console..");
         for (c = getc(fp); c != EOF; c = getc(fp))
         {
@@ -165,12 +175,99 @@ bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP,
         printf("\n");
         courseCount++;
         *nCourses = courseCount;
+        //End count courses
         rewind(fp); //This will reset us to the start of the file, so we can read again, looking for different information.
+        //Begin parsing course data.
+        char courseDates[10][5];
+        for(int i = 0; i<courseCount; i++)
+        {
+            char *courseDays = "";
+            int courseTime = 0;
+            fscanf(fp, "%s",courseDays);
+            fscanf(fp, "%d", &courseTime);
+            strcpy(courseDates[i], courseDays);
+
+            printf("Days for course: %s\n", courseDays);
+            printf("The course is held at time: %d\n", courseTime); fflush(stdout);
+
+            int array_length = *(&courseDates[i]+1)-courseDates[i];
+            bool conflictsFound = getScheduleConflict(theScheduleP, courseDates[i], courseTime);
+            if (!conflictsFound)
+            {
+                for(int j = 0; j<5; j++)//Should only be 5 possible dates in the string.
+                {
+                    switch (courseDates[i][j])
+                    {
+                        case 'M':
+                            setTimeBusy(theScheduleP, courseTime, MONDAY);
+                            break;
+                        case 'T':
+                            setTimeBusy(theScheduleP, courseTime, TUESDAY);
+                            break;
+                        case 'W':
+                            setTimeBusy(theScheduleP, courseTime, WEDNESDAY);
+                            break;
+                        case 'R':
+                            setTimeBusy(theScheduleP, courseTime, THURSDAY);
+                            break;
+                        case 'F':
+                            setTimeBusy(theScheduleP, courseTime, FRIDAY);
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+            }
+
+        }
+
     }
     printf("The schedule %s has %d lines\n", filename, courseCount); fflush(stdout);
+    displaySchedule(theScheduleP);
     ok = true;
 
 
 
     return ok;
+}
+
+bool writeScheduleToFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs)
+{
+    bool ok = false;
+    //the file tells how many rooms there are
+    FILE* fp = fopen(filename, "w");
+
+    int courseCount = 0;
+    char c;
+    char potentialCourseDays[5];
+
+    int potentialCourseTime;
+    int daysUsedCounter=0;
+
+    puts("About to write the following schedule to file...\n");
+    //displaySchedule(theScheduleP);
+    if(fp == NULL)
+    {
+        puts("Error opening file!\n");
+    }
+    else
+    {
+        const int DaysInWeek = 5;
+        const int HoursInDay = 13; //Is 8PM a valid start time?
+
+        fputs("   M T W R F \n",fp);
+        for (int row = 0; row<HoursInDay; row++)
+        {
+            fprintf(fp,"%2d", row+8); //We start at 8AM. Formatting is to pad the times
+            for (int col = 0; col<DaysInWeek; col++)
+            {
+                int* memoryToCheck = ((theScheduleP->edgeTimeP)+(row*DaysInWeek)+col);
+
+                fprintf(fp,"|%d", *memoryToCheck);
+            }
+            fprintf(fp,"|\n");fflush(stdout);
+        }
+    }
+    fclose(fp);
 }
