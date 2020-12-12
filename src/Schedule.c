@@ -89,32 +89,32 @@ bool getScheduleConflict(Schedule* theScheduleP, char courseDates[], int courseT
         switch (courseDates[j])
         {
             case 'M':
-                if(getTimeBusy(theScheduleP,courseTime, MONDAY))
+                if(getTimeBusy(theScheduleP,courseTime, MONDAY) && !conflictsFound)
                 {
                     conflictsFound = true;
                 }
                 break;
 
             case 'T':
-                if(getTimeBusy(theScheduleP,courseTime, TUESDAY))
+                if(getTimeBusy(theScheduleP,courseTime, TUESDAY)&& !conflictsFound)
                 {
                     conflictsFound = true;
                 }
                 break;
             case 'W':
-                if(getTimeBusy(theScheduleP,courseTime, WEDNESDAY))
+                if(getTimeBusy(theScheduleP,courseTime, WEDNESDAY)&& !conflictsFound)
                 {
                     conflictsFound = true;
                 }
                 break;
             case 'R':
-                if(getTimeBusy(theScheduleP,courseTime, THURSDAY))
+                if(getTimeBusy(theScheduleP,courseTime, THURSDAY)&& !conflictsFound)
                 {
                     conflictsFound = true;
                 }
                 break;
             case 'F':
-                if(getTimeBusy(theScheduleP,courseTime, FRIDAY))
+                if(getTimeBusy(theScheduleP,courseTime, FRIDAY)&& !conflictsFound)
                 {
                     conflictsFound = true;
                 }

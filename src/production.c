@@ -214,18 +214,23 @@ bool readInputFile(char* filename, int* nCourses, Schedule* theScheduleP, Course
                     {
                         case 'M':
                             setTimeBusy(theScheduleP, courseTime, MONDAY);
+                            displaySchedule(theScheduleP);
                             break;
                         case 'T':
                             setTimeBusy(theScheduleP, courseTime, TUESDAY);
+                            displaySchedule(theScheduleP);
                             break;
                         case 'W':
                             setTimeBusy(theScheduleP, courseTime, WEDNESDAY);
+                            displaySchedule(theScheduleP);
                             break;
                         case 'R':
                             setTimeBusy(theScheduleP, courseTime, THURSDAY);
+                            displaySchedule(theScheduleP);
                             break;
                         case 'F':
                             setTimeBusy(theScheduleP, courseTime, FRIDAY);
+                            displaySchedule(theScheduleP);
                             break;
                         default:
                             break;

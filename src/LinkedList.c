@@ -24,10 +24,10 @@ bool isEmpty(LLNode* lp)
 LLNode* makeEmptyLinkedList()
 {
     LLNode* lp = (LLNode*) malloc(sizeof(LLNode));
-
+    CourseDecision* cdP = (CourseDecision*) (sizeof(CourseDecision));
     lp->next = (struct LLNode*)0;
     lp->prev = (struct LLNode*)0;
-    lp->payP = (Payload*)0; //Should fail test, as list is not empty on creation.
+    lp->payP = (Payload*)0;
 
     return lp;
 }
