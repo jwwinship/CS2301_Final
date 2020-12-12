@@ -8,7 +8,19 @@
 14|0|0|0|0|0|
 15|0|0|0|0|0|
 16|1|1|0|1|1|
-17|0|0|1|1|1|
+17|0|0|0|0|0|
 18|0|0|0|0|0|
-19|1|0|0|0|1|
+19|0|0|0|0|0|
 20|0|0|0|0|0|
+Printing history
+No conflict found. The course with meeting dates MTRF at time 10:00 was added to the schedule.
+No conflict found. The course with meeting dates TF at time 12:00 was added to the schedule.
+No conflict found. The course with meeting dates W at time 9:00 was added to the schedule.
+No conflict found. The course with meeting dates MTRF at time 16:00 was added to the schedule.
+No conflict found. The course with meeting dates MTRF at time 8:00 was added to the schedule.
+No conflict found. The course with meeting dates MTRF at time 9:00 was added to the schedule.
+Conflict found. The course with meeting dates T at time 12:00 was NOT added to the schedule.
+Conflict found. The course with meeting dates R at time 16:00 was NOT added to the schedule.
+Conflict found. The course with meeting dates W at time 9:00 was NOT added to the schedule.
+No conflict found. The course with meeting dates MR at time 11:00 was added to the schedule.
+Conflict found. The course with meeting dates R at time 8:00 was NOT added to the schedule.

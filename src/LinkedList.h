@@ -15,11 +15,12 @@
 
 typedef struct
 {
-    int roomNumber;
-    float treasure;
-}SearchResults;
-typedef Course Payload;
-typedef SearchResults Payload2;
+    int courseTime;
+    char* courseDates;
+    bool courseAdded;
+}CourseDecision;
+typedef CourseDecision Payload;
+typedef Course Payload2;
 struct LLNode;
 typedef struct
 {
@@ -49,7 +50,7 @@ void savePayload2(LLNode2* lp, Payload2* mp);
 bool isEmpty(LLNode* lp);
 Payload* dequeueLIFO(LLNode* lp);
 backFromDQFIFO* dequeueFIFO(LLNode* lp);
-void printHistory(LLNode2* hp);
+void printHistory(LLNode* hp);
 
 
 

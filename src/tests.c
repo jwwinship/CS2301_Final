@@ -48,11 +48,11 @@ bool testInitSchedule()
     }
     if (ok)
     {
-        puts("Test initSchedule passed");
+        puts("Test initSchedule passed\n");
     }
     else
     {
-        puts("Test initSchedule did not pass");
+        puts("Test initSchedule did not pass\n");
     }
 
 	return ok;
@@ -84,11 +84,11 @@ bool testSetTimeBusy()
 
     if (ok)
     {
-        puts("Test setTimeBusy passed");
+        puts("Test setTimeBusy passed\n");
     }
     else
     {
-        puts("Test setTimeBusy did not pass");
+        puts("Test setTimeBusy did not pass\n");
     }
 
     return ok;
@@ -118,27 +118,114 @@ bool testGetTimeBusy()
     }
     if (ok)
     {
-        puts("Test GetTimeBusy passed");
+        puts("Test GetTimeBusy passed\n");
     }
     else
     {
-        puts("Test GetTimeBusy did not pass");
+        puts("Test GetTimeBusy did not pass\n");
     }
 
     return ok;
 }
 
-bool testMakeLList() //Tests the making of a list and the enqueue behavior.
+bool testMakeLList() //Tests the making of a list
 {
 	bool ok = true;
+    puts("starting testMakeLList");fflush(stdout);
+    //what are the criteria for success for make LList?
+    //should be able to make one, add data to it, get the data back
+    //test case 1:
+    LLNode* theListP = makeEmptyLinkedList();
+    bool rightAnswer = true;
+    bool answer = isEmpty(theListP);
+    if(answer!=rightAnswer)
+    {
+        ok = false;
+    }
+    //test case 2:
+    CourseDecision * testDecisionP = malloc(sizeof(CourseDecision));
+    savePayload(theListP, testDecisionP);
+    rightAnswer = false;
+    answer = isEmpty(theListP);
+    if(answer!=rightAnswer)
+    {
+        ok = false;
+    }
 
-	return ok;
+    //test case 3:
+    CourseDecision * testDecision2P = malloc(sizeof(CourseDecision));
+    savePayload(theListP, testDecision2P);
+    if (!(theListP->next)) //If there is no next, then our second save did not work, or there is an issue with saving payloads to the list.
+    {
+        ok = false;
+    }
+
+    //Test case 4:
+    LLNode* temp = theListP;
+    while (temp->next)
+    {
+        temp = temp->next;
+        if (!(temp->prev)) //If we move to the second element, and there is no first element, then we know that something is wrong with prev.
+        {
+            ok = false;
+        }
+
+    }
+
+    //Test Case 5
+    CourseDecision * testDecisionCompareP = theListP->payP;
+    if (isEmpty(theListP)||testDecisionCompareP->courseTime != testDecisionP->courseTime || testDecisionCompareP->courseAdded != testDecisionP->courseAdded || testDecisionCompareP->courseDates != testDecisionP->courseDates) //If there are discrepancies between the original room and the one from the list, then we know something is wrong.
+    {
+        ok = false;
+    }
+
+    //Test case 6
+    LLNode* tempP = theListP;
+    while (tempP->next)
+    {
+        if ((LLNode*)tempP->next == (LLNode*)tempP) //If next points to the same place, then something is wrong with the savePayload function
+        {
+            ok = false;
+        }
+        tempP = (LLNode*)tempP->next;
+    }
+    while (tempP->prev)
+    {
+        if ((LLNode*)tempP->prev == (LLNode*)tempP) //If prev points to the same place, then something is wrong with the savePayload function
+        {
+            ok = false;
+        }
+        tempP = (LLNode*)tempP->prev;
+    }
+
+    if (!ok)
+    {
+        puts("test make LList did not pass.\n");
+    }
+    else
+    {
+        puts("Test make LList passed.\n");
+    }
+
+    return ok;
 }
 
 bool testPrintHistory() //Visual test. If the following list of search results is printed, the test is a success.
 {
 	bool ok = true;
-
+    puts ("Testing PrintHistory...");
+    LLNode2* historyListP = makeEmptyLinkedList2();
+    char testDates[5];
+    char* testDatesP = "MTWRF";
+    for(int i = 0; i<5; i++)
+    {
+        CourseDecision * tempDecisionP= malloc(sizeof(CourseDecision));
+        tempDecisionP->courseTime = i;
+        tempDecisionP->courseDates = testDatesP;
+        tempDecisionP->courseAdded = i%2; //Easy way to vary if courses added.
+        savePayload2(historyListP, tempDecisionP);
+    }
+    printHistory(historyListP);
 	return ok;
 }
 
@@ -150,12 +237,12 @@ bool testReadInitialInputFile()
     int answer = -1;
     int rightAnswer = 4;
 
-
+    LLNode* courseDecisionP = makeEmptyLinkedList();
     Schedule* scheduleP = (Schedule *) malloc(sizeof(Schedule));
     Course* theCoursePs[20];//addresses for 20 courses
     scheduleP->edgeTimeP = (int* ) malloc(5*13*sizeof(int)); //There are 5 days in the week, and 13 valid hours in each day. We'll allocate some memory for every one of them.
     initSchedule(scheduleP);
-    ok = readInitialInputFile("final2020B.txt", &answer, scheduleP, theCoursePs);
+    ok = readInitialInputFile("final2020B.txt", &answer, scheduleP, theCoursePs, courseDecisionP);
     if (ok)
     {
         if (answer != rightAnswer)
@@ -163,13 +250,6 @@ bool testReadInitialInputFile()
             puts("test failed on number of courses\n");
         }
     }
-
-
-
-
-
-
-    //fclose();
     return ok;
 }
 

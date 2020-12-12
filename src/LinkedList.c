@@ -9,6 +9,7 @@
 #include "LinkedList.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 bool isEmpty(LLNode* lp)
 {
@@ -170,16 +171,47 @@ backFromDQFIFO* dequeueFIFO(LLNode* lp)
     return fp;
 }
 
-void printHistory(LLNode2* hp)
+void printHistory(LLNode* hp)
 {
     puts("Printing history");
-    if(hp->payP ==(Payload2*)0)
+    if(hp->payP ==(Payload*)0)
     {
         puts("Empty list");
     }
     else
     {
+        int courseTime = 0;
+        bool courseAdded = false;
+        char courseDates[7];
+        LLNode* temp = hp;
+        while (temp->next)
+        {
 
+            courseTime = temp->payP->courseTime;
+
+            courseAdded = temp->payP->courseAdded;
+            strcpy(courseDates, temp->payP->courseDates);
+            if (courseAdded)
+            {
+                printf("No conflict found. The course with meeting dates %s at time %d:00 was added to the schedule.\n", courseDates, courseTime);
+            }
+            else
+            {
+                printf("Conflict found. The course with meeting dates %s at time %d:00 was NOT added to the schedule.\n", courseDates, courseTime);
+            }
+            temp = (LLNode*)temp->next;
+        }
+        courseTime = temp->payP->courseTime;
+        courseAdded = temp->payP->courseAdded;
+        strcpy(courseDates, temp->payP->courseDates);
+        if (courseAdded)
+        {
+            printf("No conflict found. The course with meeting dates %s at time %d:00 was added to the schedule.\n", courseDates, courseTime);
+        }
+        else
+        {
+            printf("Conflict found. The course with meeting dates %s at time %d:00 was NOT added to the schedule.\n", courseDates, courseTime);
+        }
     }
 }
 

@@ -107,16 +107,20 @@ bool production(int argc, char* argv[])
             puts("About to initialize the schedule");
             initSchedule(scheduleP);
 
+            LLNode* courseDecisionListP = makeEmptyLinkedList();
 
             puts("Before read initial input file"); fflush(stdout);
-            answer = readInitialInputFile(input_initial_filename, &nCourses, scheduleP, theCoursePs); //read the file
+            answer = readInitialInputFile(input_initial_filename, &nCourses, scheduleP, theCoursePs, courseDecisionListP); //read the file
             puts("Back from read file"); fflush(stdout);
 
             puts("Before read additional input file"); fflush(stdout);
-            answer = readInitialInputFile(input_additional_filename, &nCourses, scheduleP, theCoursePs); //read the file
+            answer = readInitialInputFile(input_additional_filename, &nCourses, scheduleP, theCoursePs, courseDecisionListP); //read the file
             puts("Back from read file"); fflush(stdout);
 
             answer = writeScheduleToFile(output_filename,&nCourses, scheduleP, theCoursePs);
+            answer = writeDecisionListToFile(output_filename, courseDecisionListP);
+
+
         }//end of argument read
 
 
@@ -124,7 +128,7 @@ bool production(int argc, char* argv[])
 
         //while search is not done
         //search is now done, time to print the history
-        //printHistory(historyP);
+        //printHistory(courseDecisionsP);
 
 
     }//end of else we have good arguments
@@ -134,7 +138,7 @@ bool production(int argc, char* argv[])
 
 
 
-bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs) //TODO: Add ability to add decisions to a linked list
+bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs, LLNode* courseDecisionListP)
 {
     bool ok = false;
     //the file tells how many rooms there are
@@ -148,7 +152,7 @@ bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP,
     int daysUsedCounter=0;
 
 
-    displaySchedule(theScheduleP); //TODO: Remove line, just here for debugging.
+    displaySchedule(theScheduleP);
     if(fp == NULL)
     {
         puts("Error opening file!");
@@ -181,17 +185,28 @@ bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP,
         char courseDates[10][5];
         for(int i = 0; i<courseCount; i++)
         {
-            char *courseDays = "";
+            char *courseDaysP = "";
             int courseTime = 0;
-            fscanf(fp, "%s",courseDays);
+            fscanf(fp, "%s", courseDaysP);
             fscanf(fp, "%d", &courseTime);
-            strcpy(courseDates[i], courseDays);
+            strcpy(courseDates[i], courseDaysP);
 
-            printf("Days for course: %s\n", courseDays);
+            printf("Days for course: %s\n", courseDaysP);
             printf("The course is held at time: %d\n", courseTime); fflush(stdout);
 
             int array_length = *(&courseDates[i]+1)-courseDates[i];
             bool conflictsFound = getScheduleConflict(theScheduleP, courseDates[i], courseTime);
+
+            //Save the course decision to a list of decisions, to be printed at the end.
+            CourseDecision* courseDecision = malloc(sizeof(CourseDecision));
+
+            courseDecision->courseDates = malloc(7*sizeof(char));
+            strcpy(courseDecision->courseDates, courseDaysP);
+            courseDecision->courseTime = courseTime;
+            courseDecision->courseAdded = !conflictsFound;
+            savePayload(courseDecisionListP,courseDecision);
+
+
             if (!conflictsFound)
             {
                 for(int j = 0; j<5; j++)//Should only be 5 possible dates in the string.
@@ -225,9 +240,10 @@ bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP,
     }
     printf("The schedule %s has %d lines\n", filename, courseCount); fflush(stdout);
     displaySchedule(theScheduleP);
+    printHistory(courseDecisionListP);
     ok = true;
 
-
+    fclose(fp);
 
     return ok;
 }
@@ -267,6 +283,52 @@ bool writeScheduleToFile(char* filename, int* nCourses, Schedule* theScheduleP, 
                 fprintf(fp,"|%d", *memoryToCheck);
             }
             fprintf(fp,"|\n");fflush(stdout);
+        }
+    }
+    fclose(fp);
+}
+
+bool writeDecisionListToFile(char* filename, LLNode* decisionList)
+{
+    FILE* fp = fopen(filename, "a"); //Append to end of file
+    fputs( "Printing history\n", fp);
+    if(decisionList->payP ==(Payload*)0)
+    {
+        fputs("Empty list\n", fp);
+    }
+    else
+    {
+        int courseTime = 0;
+        bool courseAdded = false;
+        char courseDates[7];
+        LLNode* temp = decisionList;
+        while (temp->next)
+        {
+
+            courseTime = temp->payP->courseTime;
+
+            courseAdded = temp->payP->courseAdded;
+            strcpy(courseDates, temp->payP->courseDates);
+            if (courseAdded)
+            {
+                fprintf(fp,"No conflict found. The course with meeting dates %s at time %d:00 was added to the schedule.\n", courseDates, courseTime);
+            }
+            else
+            {
+                fprintf(fp,"Conflict found. The course with meeting dates %s at time %d:00 was NOT added to the schedule.\n", courseDates, courseTime);
+            }
+            temp = (LLNode*)temp->next;
+        }
+        courseTime = temp->payP->courseTime;
+        courseAdded = temp->payP->courseAdded;
+        strcpy(courseDates, temp->payP->courseDates);
+        if (courseAdded)
+        {
+            fprintf(fp,"No conflict found. The course with meeting dates %s at time %d:00 was added to the schedule.\n", courseDates, courseTime);
+        }
+        else
+        {
+            fprintf(fp,"Conflict found. The course with meeting dates %s at time %d:00 was NOT added to the schedule.\n", courseDates, courseTime);
         }
     }
     fclose(fp);
