@@ -13,4 +13,4 @@ add_executable(CS2301_Final
         src/production.h
         src/tests.c
         src/tests.h
-        src/TMSName.h src/AdjMat.c src/AdjMat.h src/Course.c src/Course.h src/Schedule.c src/Schedule.h)
+        src/TMSName.h src/Course.c src/Course.h src/Schedule.c src/Schedule.h)

@@ -21,8 +21,8 @@
 #define FILENAMELENGTHALLOWANCE 50
 
 bool production(int argc, char* argv[]);
-bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs, LLNode* courseDecisionListP);
-bool writeScheduleToFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs);
+bool readInputFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs, LLNode* courseDecisionListP);
+bool writeScheduleToFile(char* filename, Schedule* theScheduleP);
 bool writeDecisionListToFile(char* filename, LLNode* decisionList);
 void displayBoard();
 

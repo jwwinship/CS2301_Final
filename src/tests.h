@@ -14,14 +14,21 @@
 
 bool tests();
 
-bool testReadInitialInputFile();
+bool testReadInputFile();
+bool testWriteScheduleToFile();
+bool testWriteDecisionListToFile();
+
 bool testInitSchedule();
-bool testMakeLList();
+bool testDisplaySchedule();
 bool testSetTimeBusy();
 bool testGetTimeBusy();
-bool testDequeue();
-bool testPrintHistory();
 bool testGetScheduleConflict();
+
+
+bool testMakeLList();
+bool testPrintHistory();
+
+
 
 
 

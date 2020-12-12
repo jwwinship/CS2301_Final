@@ -5,7 +5,7 @@
  *      Author: Therese
  */
 #include "production.h"
-#include "AdjMat.h"
+
 
 #include "LinkedList.h"
 #include "Schedule.h"
@@ -110,14 +110,14 @@ bool production(int argc, char* argv[])
             LLNode* courseDecisionListP = makeEmptyLinkedList();
 
             puts("Before read initial input file"); fflush(stdout);
-            answer = readInitialInputFile(input_initial_filename, &nCourses, scheduleP, theCoursePs, courseDecisionListP); //read the file
+            answer = readInputFile(input_initial_filename, &nCourses, scheduleP, theCoursePs, courseDecisionListP); //read the file
             puts("Back from read file"); fflush(stdout);
 
             puts("Before read additional input file"); fflush(stdout);
-            answer = readInitialInputFile(input_additional_filename, &nCourses, scheduleP, theCoursePs, courseDecisionListP); //read the file
+            answer = readInputFile(input_additional_filename, &nCourses, scheduleP, theCoursePs, courseDecisionListP); //read the file
             puts("Back from read file"); fflush(stdout);
 
-            answer = writeScheduleToFile(output_filename,&nCourses, scheduleP, theCoursePs);
+            answer = writeScheduleToFile(output_filename, scheduleP);
             answer = writeDecisionListToFile(output_filename, courseDecisionListP);
 
 
@@ -138,7 +138,7 @@ bool production(int argc, char* argv[])
 
 
 
-bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs, LLNode* courseDecisionListP)
+bool readInputFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs, LLNode* courseDecisionListP)
 {
     bool ok = false;
     //the file tells how many rooms there are
@@ -146,11 +146,6 @@ bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP,
 
     int courseCount = 0;
     char c;
-    char potentialCourseDays[5];
-
-    int potentialCourseTime;
-    int daysUsedCounter=0;
-
 
     displaySchedule(theScheduleP);
     if(fp == NULL)
@@ -190,6 +185,10 @@ bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP,
             fscanf(fp, "%s", courseDaysP);
             fscanf(fp, "%d", &courseTime);
             strcpy(courseDates[i], courseDaysP);
+            if(courseTime < 8)
+            {
+                courseTime += 12; //Should cover both 12 and 24 hour time.
+            }
 
             printf("Days for course: %s\n", courseDaysP);
             printf("The course is held at time: %d\n", courseTime); fflush(stdout);
@@ -248,24 +247,19 @@ bool readInitialInputFile(char* filename, int* nCourses, Schedule* theScheduleP,
     return ok;
 }
 
-bool writeScheduleToFile(char* filename, int* nCourses, Schedule* theScheduleP, Course** theCoursePs)
+bool writeScheduleToFile(char* filename, Schedule* theScheduleP)
 {
-    bool ok = false;
+    bool ok = true;
     //the file tells how many rooms there are
     FILE* fp = fopen(filename, "w");
 
-    int courseCount = 0;
-    char c;
-    char potentialCourseDays[5];
-
-    int potentialCourseTime;
-    int daysUsedCounter=0;
 
     puts("About to write the following schedule to file...\n");
     //displaySchedule(theScheduleP);
     if(fp == NULL)
     {
         puts("Error opening file!\n");
+        ok = false;
     }
     else
     {
@@ -286,15 +280,18 @@ bool writeScheduleToFile(char* filename, int* nCourses, Schedule* theScheduleP, 
         }
     }
     fclose(fp);
+    return ok;
 }
 
 bool writeDecisionListToFile(char* filename, LLNode* decisionList)
 {
+    bool ok = true;
     FILE* fp = fopen(filename, "a"); //Append to end of file
     fputs( "Printing history\n", fp);
     if(decisionList->payP ==(Payload*)0)
     {
         fputs("Empty list\n", fp);
+        ok = false;
     }
     else
     {
@@ -332,4 +329,5 @@ bool writeDecisionListToFile(char* filename, LLNode* decisionList)
         }
     }
     fclose(fp);
+    return ok;
 }
