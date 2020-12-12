@@ -226,75 +226,100 @@ bool testGetScheduleConflict()
     return ok;
 }
 
-bool testMakeLList() //Tests the making of a list
+bool testMakeLList() //Tests the making of a list in many ways, since each test is dependant on the one before, they are set up so that one failure will prevent further testing.
 {
 	bool ok = true;
     puts("starting testMakeLList");fflush(stdout);
     //what are the criteria for success for make LList?
     //should be able to make one, add data to it, get the data back
-    //test case 1:
     LLNode* theListP = makeEmptyLinkedList();
-    bool rightAnswer = true;
-    bool answer = isEmpty(theListP);
-    if(answer!=rightAnswer)
+    bool rightAnswer;
+    bool answer;
+    if (ok)
     {
-        ok = false;
+        //test case 1:
+
+        rightAnswer = true;
+        answer = isEmpty(theListP);
+        if(answer!=rightAnswer)
+        {
+            ok = false;
+        }
     }
-    //test case 2:
+
     CourseDecision * testDecisionP = malloc(sizeof(CourseDecision));
-    savePayload(theListP, testDecisionP);
-    rightAnswer = false;
-    answer = isEmpty(theListP);
-    if(answer!=rightAnswer)
+    if (ok)
     {
-        ok = false;
+        //test case 2:
+
+        savePayload(theListP, testDecisionP);
+        rightAnswer = false;
+        answer = isEmpty(theListP);
+        if(answer!=rightAnswer)
+        {
+            ok = false;
+        }
     }
 
-    //test case 3:
     CourseDecision * testDecision2P = malloc(sizeof(CourseDecision));
-    savePayload(theListP, testDecision2P);
-    if (!(theListP->next)) //If there is no next, then our second save did not work, or there is an issue with saving payloads to the list.
+    if (ok)
     {
-        ok = false;
-    }
+        //test case 3:
 
-    //Test case 4:
-    LLNode* temp = theListP;
-    while (temp->next)
-    {
-        temp = (LLNode*) temp->next;
-        if (!(temp->prev)) //If we move to the second element, and there is no first element, then we know that something is wrong with prev.
+        savePayload(theListP, testDecision2P);
+        if (!(theListP->next)) //If there is no next, then our second save did not work, or there is an issue with saving payloads to the list.
         {
             ok = false;
         }
-
     }
 
-    //Test Case 5
-    CourseDecision * testDecisionCompareP = theListP->payP;
-    if (isEmpty(theListP)||testDecisionCompareP->courseTime != testDecisionP->courseTime || testDecisionCompareP->courseAdded != testDecisionP->courseAdded || testDecisionCompareP->courseDates != testDecisionP->courseDates) //If there are discrepancies between the original room and the one from the list, then we know something is wrong.
+    if (ok)
     {
-        ok = false;
-    }
+        //Test case 4:
+        LLNode* temp = theListP;
+        while (temp->next)
+        {
+            temp = (LLNode*) temp->next;
+            if (!(temp->prev)) //If we move to the second element, and there is no first element, then we know that something is wrong with prev.
+            {
+                ok = false;
+            }
 
-    //Test case 6
-    LLNode* tempP = theListP;
-    while (tempP->next)
+        }
+
+    }
+    if (ok)
     {
-        if ((LLNode*)tempP->next == (LLNode*)tempP) //If next points to the same place, then something is wrong with the savePayload function
+        //Test Case 5
+        CourseDecision * testDecisionCompareP = theListP->payP;
+        if (isEmpty(theListP)||testDecisionCompareP->courseTime != testDecisionP->courseTime || testDecisionCompareP->courseAdded != testDecisionP->courseAdded || testDecisionCompareP->courseDates != testDecisionP->courseDates) //If there are discrepancies between the original room and the one from the list, then we know something is wrong.
         {
             ok = false;
         }
-        tempP = (LLNode*)tempP->next;
     }
-    while (tempP->prev)
+
+    if (ok)
     {
-        if ((LLNode*)tempP->prev == (LLNode*)tempP) //If prev points to the same place, then something is wrong with the savePayload function
+        //Test case 6
+        LLNode* tempP = theListP;
+        while (tempP->next)
         {
-            ok = false;
+            if ((LLNode*)tempP->next == (LLNode*)tempP) //If next points to the same place, then something is wrong with the savePayload function
+            {
+                ok = false;
+            }
+            tempP = (LLNode*)tempP->next;
         }
-        tempP = (LLNode*)tempP->prev;
+        while (tempP->prev)
+        {
+            if ((LLNode*)tempP->prev == (LLNode*)tempP) //If prev points to the same place, then something is wrong with the savePayload function
+            {
+                ok = false;
+            }
+            tempP = (LLNode*)tempP->prev;
+        }
     }
+
 
     if (!ok)
     {
